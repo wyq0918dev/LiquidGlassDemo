@@ -2,10 +2,12 @@ package com.wyq0918dev.liquidglassdemo
 
 import android.os.Build
 import androidx.compose.animation.Animatable
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -25,7 +27,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -84,7 +85,6 @@ import kotlin.math.pow
 data class NavigationItem(
     val label: String,
     val icon: ImageVector,
-    val selectedIcon: ImageVector,
 )
 
 @OptIn(ExperimentalLuminanceSamplerApi::class, ExperimentalLuminanceSamplerApi::class)
@@ -92,6 +92,7 @@ data class NavigationItem(
 fun LiquidGlassNavigationBar(
     modifier: Modifier = Modifier,
     liquidGlassProviderState: LiquidGlassProviderState,
+    legacy: Boolean = false,
     tabs: List<NavigationItem>,
     selectedIndexState: MutableState<Int>,
     onTabSelected: (index: Int) -> Unit,
@@ -138,7 +139,7 @@ fun LiquidGlassNavigationBar(
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
 
-        BottomAppBar(
+        NavigationBar(
             modifier = modifier,
             containerColor = Color.Transparent,
         ) {
@@ -233,6 +234,17 @@ fun LiquidGlassNavigationBar(
                                             stiffness = 200f
                                         )
                                     )
+                                    val itemContentColor by animateColorAsState(
+                                        targetValue = if (selectedIndexState.value == index && !isDragging) {
+                                            MaterialTheme.colorScheme.onPrimaryContainer
+                                        } else {
+                                            contentColor.value
+                                        },
+                                        animationSpec = spring(
+                                            dampingRatio = 0.8f,
+                                            stiffness = 200f
+                                        )
+                                    )
                                     val color = MaterialTheme.colorScheme.primaryContainer
                                     Column(
                                         modifier = Modifier
@@ -279,13 +291,25 @@ fun LiquidGlassNavigationBar(
                                     ) {
                                         Image(
                                             modifier = Modifier.size(size = 24.dp),
-                                            imageVector = if (selectedIndexState.value != index) tab.icon else tab.selectedIcon,
+                                            imageVector = tab.icon,
                                             contentDescription = null,
-                                            colorFilter = ColorFilter.tint(color = contentColor.value),
+                                            colorFilter = ColorFilter.tint(
+//                                                color = if (selectedIndexState.value != index) {
+//                                                    contentColor.value
+//                                                } else {
+//                                                    MaterialTheme.colorScheme.onPrimaryContainer
+//                                                },
+                                                color = itemContentColor
+                                            ),
                                         )
-                                        BasicText(
+                                        Text(
                                             text = tab.label,
-                                            color = { contentColor.value },
+//                                            color = if (selectedIndexState.value != index) {
+//                                                contentColor.value
+//                                            } else {
+//                                                MaterialTheme.colorScheme.onPrimaryContainer
+//                                            },
+                                            color = itemContentColor
                                         )
                                     }
                                 }
@@ -364,7 +388,7 @@ fun LiquidGlassNavigationBar(
                                 )
                             }
                             .background(
-                                color = MaterialTheme.colorScheme.surfaceContainer,
+                                color = Color.Transparent,
                                 shape = RoundedCornerShape(percent = 50),
                             )
                             .liquidGlass(
@@ -429,7 +453,7 @@ fun LiquidGlassNavigationBar(
                     },
                     icon = {
                         Image(
-                            imageVector = if (selectedIndexState.value != index) tab.icon else tab.selectedIcon,
+                            imageVector = tab.icon,
                             contentDescription = null,
                         )
                     },

@@ -15,6 +15,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -62,23 +63,19 @@ fun ActivityMain() {
     val tabs = arrayListOf(
         NavigationItem(
             label = "0",
-            icon = Icons.Outlined.Home,
-            selectedIcon = Icons.Filled.Home,
+            icon = Icons.TwoTone.Home,
         ),
         NavigationItem(
             label = "1",
-            icon = Icons.Outlined.Home,
-            selectedIcon = Icons.Filled.Home,
+            icon = Icons.TwoTone.Home,
         ),
         NavigationItem(
             label = "2",
-            icon = Icons.Outlined.Home,
-            selectedIcon = Icons.Filled.Home,
+            icon = Icons.TwoTone.Home,
         ),
         NavigationItem(
             label = "3",
-            icon = Icons.Outlined.Home,
-            selectedIcon = Icons.Filled.Home,
+            icon = Icons.TwoTone.Home,
         ),
     )
 
