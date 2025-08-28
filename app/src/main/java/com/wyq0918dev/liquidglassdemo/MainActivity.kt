@@ -134,7 +134,7 @@ fun ActivityMain() {
                 .liquidGlassProvider(state = providerState)
                 .background(color = MaterialTheme.colorScheme.background),
             state = pagerState,
-            userScrollEnabled = false,
+            userScrollEnabled = true,
             pageContent = { page ->
                 Box(
                     modifier = Modifier
