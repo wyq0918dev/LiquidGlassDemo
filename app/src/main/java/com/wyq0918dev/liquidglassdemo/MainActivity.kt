@@ -125,7 +125,7 @@ fun ActivityMain() {
                         pagerState.animateScrollToPage(page = index)
                     }
                 },
-                useMaterial = true,
+//                useMaterial = true,
             )
         },
     ) { innerPadding ->
