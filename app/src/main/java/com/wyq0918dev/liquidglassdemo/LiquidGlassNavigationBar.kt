@@ -7,7 +7,6 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.SpringSpec
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateValueAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
@@ -27,9 +26,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -92,7 +91,7 @@ data class NavigationItem(
 fun LiquidGlassNavigationBar(
     modifier: Modifier = Modifier,
     liquidGlassProviderState: LiquidGlassProviderState,
-    legacy: Boolean = false,
+    useMaterial: Boolean = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU,
     tabs: List<NavigationItem>,
     selectedIndexState: MutableState<Int>,
     onTabSelected: (index: Int) -> Unit,
@@ -134,16 +133,38 @@ fun LiquidGlassNavigationBar(
     val localContentColor: ProvidableCompositionLocal<Color> =
         compositionLocalOf { Color.Unspecified }
 
+    val bottomBarColor = if (useMaterial) {
+        NavigationBarDefaults.containerColor
+    } else {
+        Color.Transparent
+    }
 
+    NavigationBar(
+        modifier = modifier,
+        containerColor = bottomBarColor,
+    ) {
+        when {
+            useMaterial -> tabs.forEachIndexed { index, tab ->
+                NavigationBarItem(
+                    selected = selectedIndexState.value == index,
+                    onClick = {
+                        selectedIndexState.value = index
+                        onTabSelected(index)
+                    },
+                    icon = {
+                        Image(
+                            imageVector = tab.icon,
+                            contentDescription = null,
+                        )
+                    },
+                    label = {
+                        Text(text = tab.label)
+                    },
+                    alwaysShowLabel = false
+                )
+            }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-
-
-        NavigationBar(
-            modifier = modifier,
-            containerColor = Color.Transparent,
-        ) {
-            Row(
+            else -> Row(
                 modifier = Modifier
                     .padding(horizontal = 32.dp)
                     .fillMaxWidth(),
@@ -245,13 +266,14 @@ fun LiquidGlassNavigationBar(
                                             stiffness = 200f
                                         )
                                     )
-                                    val color = MaterialTheme.colorScheme.primaryContainer
+                                    val itemContainerColor =
+                                        MaterialTheme.colorScheme.primaryContainer
                                     Column(
                                         modifier = Modifier
                                             .clip(shape = RoundedCornerShape(percent = 50))
                                             .drawBehind {
                                                 drawRect(
-                                                    color = color,
+                                                    color = itemContainerColor,
                                                     alpha = itemBackgroundAlpha,
                                                 )
                                             }
@@ -294,21 +316,11 @@ fun LiquidGlassNavigationBar(
                                             imageVector = tab.icon,
                                             contentDescription = null,
                                             colorFilter = ColorFilter.tint(
-//                                                color = if (selectedIndexState.value != index) {
-//                                                    contentColor.value
-//                                                } else {
-//                                                    MaterialTheme.colorScheme.onPrimaryContainer
-//                                                },
                                                 color = itemContentColor
                                             ),
                                         )
                                         Text(
                                             text = tab.label,
-//                                            color = if (selectedIndexState.value != index) {
-//                                                contentColor.value
-//                                            } else {
-//                                                MaterialTheme.colorScheme.onPrimaryContainer
-//                                            },
                                             color = itemContentColor
                                         )
                                     }
@@ -440,28 +452,6 @@ fun LiquidGlassNavigationBar(
                             )
                     )
                 }
-            }
-        }
-    } else {
-        NavigationBar(modifier = modifier) {
-            tabs.forEachIndexed { index, tab ->
-                NavigationBarItem(
-                    selected = selectedIndexState.value == index,
-                    onClick = {
-                        selectedIndexState.value = index
-                        onTabSelected(index)
-                    },
-                    icon = {
-                        Image(
-                            imageVector = tab.icon,
-                            contentDescription = null,
-                        )
-                    },
-                    label = {
-                        Text(text = tab.label)
-                    },
-                    alwaysShowLabel = false
-                )
             }
         }
     }

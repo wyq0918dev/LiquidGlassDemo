@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -35,7 +33,9 @@ import androidx.compose.ui.graphics.Color
 import com.kyant.liquidglass.liquidGlassProvider
 import com.kyant.liquidglass.rememberLiquidGlassProviderState
 import com.wyq0918dev.liquidglassdemo.ui.theme.LiquidGlassDemoTheme
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -51,7 +51,7 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, FlowPreview::class)
 @Composable
 fun ActivityMain() {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
@@ -89,7 +89,9 @@ fun ActivityMain() {
     LaunchedEffect(key1 = pagerState) {
         snapshotFlow {
             pagerState.currentPage
-        }.collectLatest {
+        }.debounce(
+            timeoutMillis = 150,
+        ).collectLatest {
             targetPage.intValue = pagerState.currentPage
         }
     }
@@ -123,6 +125,7 @@ fun ActivityMain() {
                         pagerState.animateScrollToPage(page = index)
                     }
                 },
+                useMaterial = true,
             )
         },
     ) { innerPadding ->
