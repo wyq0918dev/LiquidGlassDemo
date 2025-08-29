@@ -400,7 +400,7 @@ fun LiquidGlassNavigationBar(
                                 )
                             }
                             .background(
-                                color = Color.Transparent,
+                                color = MaterialTheme.colorScheme.surfaceContainer,
                                 shape = RoundedCornerShape(percent = 50),
                             )
                             .liquidGlass(
